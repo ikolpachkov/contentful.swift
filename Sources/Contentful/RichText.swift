@@ -10,7 +10,7 @@ import Foundation
 
 /// The base protocol which all node types that may be present in a tree of Structured text.
 /// See: <https://www.contentful.com/developers/docs/tutorials/general/structured-text-field-type-alpha/> for more information.
-public protocol Node: Decodable {
+public protocol Node: Codable {
     /// The type of node which should be rendered.
     var nodeType: NodeType { get }
 }
@@ -48,7 +48,7 @@ internal enum NodeContentCodingKeys: String, CodingKey {
 }
 
 /// A descriptor of the node's type, which can be used to determine rendering heuristics.
-public enum NodeType: String, Decodable {
+public enum NodeType: String, Codable {
     /// The top-level node type.
     case document
     /// A block of text, the parent node for inline text nodes.
@@ -136,6 +136,12 @@ public class BlockNode: Node {
         self.nodeType = nodeType
         self.content = content
     }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NodeContentCodingKeys.self)
+        try container.encode(nodeType, forKey: .nodeType)
+        try container.encodeContent(content, forKey: .content)
+    }
 }
 
 /// InlineNode is the base class for all nodes which are rendered as an inline string (as opposed to a block node).
@@ -148,9 +154,16 @@ public class InlineNode: Node {
         nodeType = try container.decode(NodeType.self, forKey: .nodeType)
         content = try container.decodeContent(forKey: .content)
     }
+
     internal init(nodeType: NodeType, content: [Node]) {
         self.nodeType = nodeType
         self.content = content
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NodeContentCodingKeys.self)
+        try container.encode(nodeType, forKey: .nodeType)
+        try container.encodeContent(content, forKey: .content)
     }
 }
 
@@ -168,6 +181,12 @@ public class RichTextDocument: Node {
         let container = try decoder.container(keyedBy: NodeContentCodingKeys.self)
         nodeType = try container.decode(NodeType.self, forKey: .nodeType)
         content = try container.decodeContent(forKey: .content)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NodeContentCodingKeys.self)
+        try container.encode(nodeType, forKey: .nodeType)
+        try container.encodeContent(content, forKey: .content)
     }
 }
 
@@ -274,12 +293,12 @@ public struct Text: Node {
     public let marks: [Mark]
 
     /// THe markup styling which should be applied to the text.
-    public struct Mark: Decodable {
+    public struct Mark: Codable {
         public let type: MarkType
     }
 
     /// A type of the markup styling which should be applied to the text.
-    public enum MarkType: String, Decodable {
+    public enum MarkType: String, Codable {
         /// Bold text.
         case bold
         /// Italicized text.
@@ -312,5 +331,32 @@ extension KeyedDecodingContainer {
             content.append(element)
         }
         return content
+    }
+}
+
+
+extension KeyedEncodingContainer {
+
+    internal mutating func encodeContent(_ content: [Node], forKey key: K) throws {
+        var container = self.nestedUnkeyedContainer(forKey: key)
+
+        for node in content {
+            switch node {
+            case let n as Text: try container.encode(n)
+            case let n as Paragraph: try container.encode(n)
+            case let n as Heading: try container.encode(n)
+            case let n as RichTextDocument: try container.encode(n)
+            case let n as BlockQuote: try container.encode(n)
+            case let n as HorizontalRule: try container.encode(n)
+            case let n as OrderedList: try container.encode(n)
+            case let n as UnorderedList: try container.encode(n)
+            case let n as ListItem: try container.encode(n)
+            case let n as ResourceLinkBlock: try container.encode(n)
+            case let n as ResourceLinkInline: try container.encode(n)
+            case let n as Hyperlink: try container.encode(n)
+            default:
+                assertionFailure("Unknown node type. For correct work it is nesessary implement encoding logic for this node. Node: \(node)")
+            }
+        }
     }
 }

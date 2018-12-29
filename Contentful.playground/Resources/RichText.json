@@ -1,0 +1,24 @@
+{
+    "data": {},
+    "content": [
+        {
+            "data": {},
+            "content": [
+                {
+                    "data": {},
+                    "marks": [],
+                    "value": "Man on the Moon",
+                    "nodeType": "text"
+                },
+                {
+                    "data": {},
+                    "marks": [],
+                    "value": "London is the capital of Great Britain",
+                    "nodeType": "text"
+                }
+            ],
+            "nodeType": "paragraph"
+        }
+    ],
+    "nodeType": "document"
+}

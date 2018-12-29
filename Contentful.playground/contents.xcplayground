@@ -5,6 +5,7 @@
         <page name='Working with Entries'/>
         <page name='Working with Assets'/>
         <page name='Search Parameters'/>
-        <page name='Modellabe Protocols'/>
+        <page name='EntryDecodable Protocols'/>
+        <page name='EntryEncodable Protocols'/>
     </pages>
 </playground>
