@@ -15,6 +15,14 @@
                     "marks": [],
                     "value": "London is the capital of Great Britain",
                     "nodeType": "text"
+                },
+                {
+                    "data": {
+                        "title": "Google",
+                        "uri": "http://google.com"
+                    },
+                    "content": [],
+                    "nodeType": "hyperlink"
                 }
             ],
             "nodeType": "paragraph"

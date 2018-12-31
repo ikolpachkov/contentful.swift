@@ -16,7 +16,7 @@ public protocol Node: Codable {
 }
 
 /// The data describing the linked entry or asset for an `EmbeddedResouceNode`
-public class ResourceLinkData: Decodable {
+public class ResourceLinkData: Codable {
     /// The raw link object which describes the target entry or asset.
     public let target: Link
 
@@ -40,6 +40,22 @@ public class ResourceLinkData: Decodable {
         target = resolvedTarget
         resolvedResource = nil
         self.title = title
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: JSONCodingKeys.self)
+        try container.encode(target, forKey: JSONCodingKeys(stringValue: "target")!)
+        if let title = title {
+            try container.encode(title, forKey: JSONCodingKeys(stringValue: "title")!)
+        }
+        if let resolvedResource = resolvedResource {
+            var nested = container.nestedContainer(keyedBy: JSONCodingKeys.self, forKey: JSONCodingKeys(stringValue: "target")!)
+
+            try nested.encode(resolvedResource.id, forKey: JSONCodingKeys(stringValue: "id")!)
+            try nested.encode(resolvedResource.updatedAt, forKey: JSONCodingKeys(stringValue: "updatedAt")!)
+            try nested.encode(resolvedResource.createdAt, forKey: JSONCodingKeys(stringValue: "createdAt")!)
+            try nested.encode(resolvedResource.localeCode, forKey: JSONCodingKeys(stringValue: "localeCode")!)
+        }
     }
 }
 
@@ -240,10 +256,18 @@ public class Hyperlink: InlineNode {
         /// The text which should be displayed for the hyperlink.
         public let title: String?
     }
+
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: NodeContentCodingKeys.self)
         data = try container.decode(Data.self, forKey: .data)
         try super.init(from: decoder)
+    }
+
+    public override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NodeContentCodingKeys.self)
+        try container.encode(data, forKey: .data)
+        try container.encode(nodeType, forKey: .nodeType)
+        try container.encodeContent(content, forKey: .content)
     }
 }
 
@@ -263,6 +287,13 @@ public class ResourceLinkBlock: BlockNode {
         data = try container.decode(ResourceLinkData.self, forKey: .data)
         try super.init(from: decoder)
     }
+
+    public override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NodeContentCodingKeys.self)
+        try container.encode(data, forKey: .data)
+        try container.encode(nodeType, forKey: .nodeType)
+        try container.encodeContent(content, forKey: .content)
+    }
 }
 
 /// A inline containing data for a linked entry or asset.
@@ -280,6 +311,13 @@ public class ResourceLinkInline: InlineNode {
         let container = try decoder.container(keyedBy: NodeContentCodingKeys.self)
         data = try container.decode(ResourceLinkData.self, forKey: .data)
         try super.init(from: decoder)
+    }
+
+    public override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NodeContentCodingKeys.self)
+        try container.encode(data, forKey: .data)
+        try container.encode(nodeType, forKey: .nodeType)
+        try container.encodeContent(content, forKey: .content)
     }
 }
 

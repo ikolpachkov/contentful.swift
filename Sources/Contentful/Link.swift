@@ -11,10 +11,10 @@ import Foundation
 /// A representation of Linked Resources that a field may point to in your content model.
 /// This stateful type safely highlights links that have been resolved to entries, resolved to assets,
 /// or remain unresolved.
-public enum Link: Decodable {
+public enum Link: Codable {
 
     /// The system properties which describe the link.
-    public struct Sys: Decodable {
+    public struct Sys: Codable {
 
         /// The identifier of the linked resource
         public let id: String
@@ -103,6 +103,20 @@ public enum Link: Decodable {
         let container   = try decoder.container(keyedBy: CodingKeys.self)
         let sys         = try container.decode(Link.Sys.self, forKey: .sys)
         self            = .unresolved(sys)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        let sys: Link.Sys
+        switch self {
+        case .asset(let asset):
+            sys = Link.Sys(id: asset.id, linkType: "Asset", type: "")
+        case .entry(let entry):
+            sys = Link.Sys(id: entry.id, linkType: "Entry", type: "")
+        case .unresolved(let s):
+            sys = s
+        }
+        try container.encode(sys, forKey: .sys)
     }
 
     private enum CodingKeys: String, CodingKey {
