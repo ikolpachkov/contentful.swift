@@ -70,6 +70,8 @@ open class Client {
 
     fileprivate var scheme: String { return clientConfiguration.secure ? "https": "http" }
 
+    public let linkResolver = LinkResolver()
+    
     /// Initializes a new Contentful client instance
     ///
     /// - Parameters:
@@ -114,7 +116,7 @@ open class Client {
             jsonDecoder.userInfo[.contentTypesContextKey] = contentTypes
         }
 
-        jsonDecoder.userInfo[.linkResolverContextKey] = LinkResolver()
+        jsonDecoder.userInfo[.linkResolverContextKey] = linkResolver
         self.persistenceIntegration = persistenceIntegration
         let contentfulHTTPHeaders = [
             "Authorization": "Bearer \(accessToken)",

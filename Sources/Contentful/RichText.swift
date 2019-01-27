@@ -48,14 +48,6 @@ public class ResourceLinkData: Codable {
         if let title = title {
             try container.encode(title, forKey: JSONCodingKeys(stringValue: "title")!)
         }
-        if let resolvedResource = resolvedResource {
-            var nested = container.nestedContainer(keyedBy: JSONCodingKeys.self, forKey: JSONCodingKeys(stringValue: "target")!)
-
-            try nested.encode(resolvedResource.id, forKey: JSONCodingKeys(stringValue: "id")!)
-            try nested.encode(resolvedResource.updatedAt, forKey: JSONCodingKeys(stringValue: "updatedAt")!)
-            try nested.encode(resolvedResource.createdAt, forKey: JSONCodingKeys(stringValue: "createdAt")!)
-            try nested.encode(resolvedResource.localeCode, forKey: JSONCodingKeys(stringValue: "localeCode")!)
-        }
     }
 }
 

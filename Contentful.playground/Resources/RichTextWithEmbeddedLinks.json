@@ -1,0 +1,62 @@
+{
+    "data": {},
+    "content": [
+        {
+            "data": {},
+            "content": [
+                {
+                    "data": {},
+                    "marks": [],
+                    "value": "Lorem ipsum dolor sit amet, ",
+                    "nodeType": "text"
+                },
+                {
+                    "data": {
+                        "target": {
+                            "sys": {
+                                "id": "5IXLf1qzZe0y8asw8wumGK",
+                                "type": "Link",
+                                "linkType": "Entry"
+                            }
+                        }
+                    },
+                    "content": [],
+                    "nodeType": "embedded-entry-inline"
+                },
+                {
+                    "data": {},
+                    "marks": [],
+                    "value": " elit. ",
+                    "nodeType": "text"
+                }
+            ],
+            "nodeType": "paragraph"
+        },
+        {
+            "data": {
+                "target": {
+                    "sys": {
+                        "id": "1xg3MMlHzyYagEoAooAokO",
+                        "type": "Link",
+                        "linkType": "Asset"
+                    }
+                }
+            },
+            "content": [],
+            "nodeType": "embedded-asset-block"
+        },
+        {
+            "data": {},
+            "content": [
+                {
+                    "data": {},
+                    "marks": [],
+                    "value": "",
+                    "nodeType": "text"
+                }
+            ],
+            "nodeType": "paragraph"
+        }
+    ],
+    "nodeType": "document"
+    }

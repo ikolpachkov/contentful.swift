@@ -4,14 +4,15 @@ import Foundation
 import Contentful
 
 
-let filePath = Bundle.main.path(forResource:"RichText", ofType: "json")
+let filePath = Bundle.main.path(forResource:"RichTextWithEmbeddedLinks", ofType: "json")
 let contentData = FileManager.default.contents(atPath: filePath!)!
 let content = String(data:contentData, encoding:String.Encoding.utf8)!
 let trimmed = content.trimmingCharacters(in: .whitespaces)
 print("input: \(trimmed)")
 print("\n\n")
 
-private let decoder = JSONDecoder()
+let client = Client(spaceId: "fwb41g609la1", accessToken: "8e352969dbed3820906ba2cdf11bcba27f7622a76d4400e67d692ecb0fa66b40")
+private let decoder = client.jsonDecoder
 let result = try decoder.decode(RichTextDocument.self, from: contentData)
 
 

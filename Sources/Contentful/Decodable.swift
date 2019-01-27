@@ -140,7 +140,7 @@ public extension KeyedDecodingContainer {
     }
 }
 
-internal class LinkResolver {
+public class LinkResolver {
 
     private var dataCache: DataCache = DataCache()
 
@@ -148,13 +148,13 @@ internal class LinkResolver {
 
     private static let linksArrayPrefix = "linksArrayPrefix"
 
-    internal func cache(assets: [Asset]) {
+    public func cache(assets: [Asset]) {
         for asset in assets {
             dataCache.add(asset: asset)
         }
     }
 
-    internal func cache(entryDecodables: [EntryDecodable]) {
+    public func cache(entryDecodables: [EntryDecodable]) {
         for entryDecodable in entryDecodables {
             dataCache.add(entry: entryDecodable)
         }
@@ -176,7 +176,7 @@ internal class LinkResolver {
 
     // Executes all cached callbacks to resolve links and then clears the callback cache and the data cache
     // where resources are cached before being resolved.
-    internal func churnLinks() {
+    public func churnLinks() {
         for (linkKey, callbacksList) in callbacks {
             if linkKey.hasPrefix(LinkResolver.linksArrayPrefix) {
                 let firstKeyIndex = linkKey.index(linkKey.startIndex, offsetBy: LinkResolver.linksArrayPrefix.count)
@@ -189,6 +189,27 @@ internal class LinkResolver {
                 }
             } else {
                 let item = dataCache.item(for: linkKey)
+                for callback in callbacksList {
+                    callback(item as AnyObject)
+                }
+            }
+        }
+        self.callbacks = [:]
+        self.dataCache = DataCache()
+    }
+    
+    public func churnLinks(resolve: (_ id: String) -> AnyObject?) {
+        for (linkKey, callbacksList) in callbacks {
+            if linkKey.hasPrefix(LinkResolver.linksArrayPrefix) {
+                let firstKeyIndex = linkKey.index(linkKey.startIndex, offsetBy: LinkResolver.linksArrayPrefix.count)
+                let onlyKeysString = linkKey[firstKeyIndex ..< linkKey.endIndex]
+                // Split creates a [Substring] array, but we need [String] to index the cache
+                let keys = onlyKeysString.split(separator: ",").map { String($0) }
+                let items: [AnyObject] = keys.compactMap { resolve($0) }
+                for callback in callbacksList {
+                    callback(items as AnyObject)
+                }
+            } else if let item = resolve(linkKey) {
                 for callback in callbacksList {
                     callback(item as AnyObject)
                 }

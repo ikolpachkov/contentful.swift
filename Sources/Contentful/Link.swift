@@ -110,9 +110,9 @@ public enum Link: Codable {
         let sys: Link.Sys
         switch self {
         case .asset(let asset):
-            sys = Link.Sys(id: asset.id, linkType: "Asset", type: "")
+            sys = Link.Sys(id: asset.id, linkType: "Asset", type: "Link")
         case .entry(let entry):
-            sys = Link.Sys(id: entry.id, linkType: "Entry", type: "")
+            sys = Link.Sys(id: entry.id, linkType: "Entry", type: "Link")
         case .unresolved(let s):
             sys = s
         }
